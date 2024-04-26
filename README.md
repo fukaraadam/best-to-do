@@ -8,8 +8,6 @@ Run `npm install` from root directory. This will install all dependencies for al
 
 ### Core Development
 
-Core application is a static website.
-
 - `npm run dev` - Start website in development mode.
 - `npm run build` - Build for production.
 - `npm run utility:icon-generator` - Update all icons and logos.
@@ -22,7 +20,7 @@ Git lfs is used for storing binary files. VS Code is used for development. Prett
 
 ### Folder Structure
 
-- core: Next.js app for UI and static website.
+- core: Next.js app.
 - utility-scripts: Utility scripts to be used manually.
 
 ### Naming Convention
