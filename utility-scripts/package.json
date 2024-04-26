@@ -1,0 +1,17 @@
+{
+  "name": "utility-scripts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "icon-generator": "ts-node ./src/icon-generator/icon-generator.ts"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "to-ico": "^1.1.5"
+  },
+  "devDependencies": {
+    "@types/to-ico": "^1.1.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
