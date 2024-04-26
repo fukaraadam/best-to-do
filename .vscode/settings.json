@@ -1,0 +1,20 @@
+{
+  // Added these for Prettier
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  // Added these for IntelliSense
+  "files.associations": {
+    ".env.*": "properties",
+    "*.css": "tailwindcss"
+  },
+  // Added these for Github Markdown
+  "markdownlint.config": {
+    "MD033": {
+      "allowed_elements": ["a", "span", "h1", "img", "p"]
+    },
+    "first-line-h1": false
+  },
+  "typescript.tsdk": "node_modules\\typescript\\lib"
+}
