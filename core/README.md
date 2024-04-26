@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Core App
 
-## Getting Started
+Next.js is used for website and Flux design will be followed with Redux.
 
-First, run the development server:
+## Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Created by `npx create-next-app@latest` command. Typescript, EsLint, Tailwind CSS, src/ directory, App Router added by this command.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Folder Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- public: static files to be served directly.
+- src: source files for both client and server side. More info: [`Next.js folder structure`][Next.js Folder].
+  - app: app related files, layouts, pages etc.
+  - assets: Images, fonts, etc.
+  - components: components to use in client side. Module css files, React components, etc.
+  - data: static data files to be used in general. ts, JSON, CSV etc.
+  - lib: Non-component functions to use. Utility functions, models, redux store, etc.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## ToDos
 
-## Learn More
+- [ ] Add next-seo
+- [ ] Add logging mechanism
+- [ ] Add sentry: `./src/lib/redux/middleware/logger.ts` will logs redux actions to console. It can be used to log errors to sentry.
 
-To learn more about Next.js, take a look at the following resources:
+**Through Development:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [ ] Edit pages in `./src/app/sitemap.ts` to include all pages and maybe edit `./src/app/robots.ts`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Warnings
 
-## Deploy on Vercel
+- DaisyUI theme is using "oklch" css function which is not supported by old browsers (e.g. chrome v111). It will fallback to light theme in these browsers. So check for light theme too.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<!-- Links Used through document -->
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[Next.js Folder]: https://nextjs.org/docs/getting-started/project-structure
