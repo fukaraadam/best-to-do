@@ -1,10 +1,6 @@
 import nodemailer from 'nodemailer';
 
 export async function sendTestMail() {
-  console.log('EMAIL_SERVER_HOST: ', process.env.EMAIL_SERVER_HOST);
-  console.log('EMAIL_SERVER_PORT: ', process.env.EMAIL_SERVER_PORT);
-  console.log('EMAIL_SERVER_USER: ', process.env.EMAIL_SERVER_USER);
-  console.log('EMAIL_SERVER_PASSWORD: ', process.env.EMAIL_SERVER_PASSWORD);
   // create reusable transporter object using the default SMTP transport
   // const transporter = nodemailer.createTransport({
   //   host: process.env.EMAIL_SERVER_HOST,
@@ -25,5 +21,6 @@ export async function sendTestMail() {
     html: '<b>Testing</b>', // html body
   });
 
+  console.log(info);
   return info;
 }

@@ -1,4 +1,5 @@
 import { signIn } from '@/lib/auth';
+import { sendTestMail } from '@/lib/mailer';
 
 export default function Home() {
   return (
@@ -13,6 +14,16 @@ export default function Home() {
         >
           <button type="submit" className="btn btn-primary">
             Sign In
+          </button>
+        </form>
+        <form
+          action={async () => {
+            'use server';
+            await sendTestMail();
+          }}
+        >
+          <button type="submit" className="btn btn-primary">
+            Test Mail
           </button>
         </form>
       </div>
