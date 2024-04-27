@@ -4,7 +4,7 @@ Next.js is used for website and Flux design will be followed with Redux.
 
 ## Prisma Usage
 
-Add dotenv to beginning like `npx dotenv -e .env.local -- prisma migrate dev`
+Add dotenv to beginning like `npx dotenv -c -- prisma migrate dev`
 
 - `npx prisma init --datasource-provider sqlite` to initialize prisma
 - `npx prisma migrate dev --name init` to create a migration

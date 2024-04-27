@@ -3,6 +3,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import prisma from '@/lib/db';
 import GitHub from 'next-auth/providers/github';
 import Nodemailer from 'next-auth/providers/nodemailer';
+import jwt from 'jsonwebtoken';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -26,4 +27,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
     GitHub,
   ],
+  secret: process.env.AUTH_SECRET,
+  session: {
+    strategy: 'jwt',
+  },
+  jwt: {
+    encode: async (params) => {
+      console.log('encoded: ', params);
+      const encoded = jwt.sign(params.token || '', process.env.AUTH_SECRET, {
+        expiresIn: 5000,
+      });
+      console.log('encrypt: ', encoded);
+      const decoded = jwt.verify(encoded, process.env.AUTH_SECRET);
+      console.log('verify: ', decoded);
+      return encoded;
+    },
+    decode: async (params) => {
+      console.log('encrypt from decode: ', params.token);
+      const decoded = jwt.verify(
+        params.token || '',
+        process.env.AUTH_SECRET,
+      ) as jwt.JwtPayload;
+      console.log('decoded: ', decoded);
+      return decoded;
+    },
+  },
 });

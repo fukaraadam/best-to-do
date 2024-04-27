@@ -6,15 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "prisma:seed": "ts-node ./prisma/seed.ts",
-    "prisma:open": "prisma studio",
-    "prisma:push": "prisma db push",
+    "prisma:open": "dotenv -c -- prisma studio",
+    "prisma:push": "dotenv -c -- prisma db push",
+    "sc:db": "dotenv -c -- ts-node ./scripts/db.ts",
+    "sc:jwt": "dotenv -c -- ts-node ./scripts/jwt.ts",
     "lint": "next lint"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.0.0",
     "@prisma/client": "^5.13.0",
     "@reduxjs/toolkit": "^2.2.3",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.3",
     "next-auth": "^5.0.0-beta.17",
     "nodemailer": "^6.9.13",
@@ -24,6 +26,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.12",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.14",
     "@types/react": "^18",

@@ -1,4 +1,4 @@
-import { signIn } from '@/lib/auth';
+import { signIn, signOut, auth } from '@/lib/auth';
 import { sendTestMail } from '@/lib/mailer';
 
 export default function Home() {
@@ -19,6 +19,16 @@ export default function Home() {
         <form
           action={async () => {
             'use server';
+            await signOut();
+          }}
+        >
+          <button type="submit" className="btn btn-primary">
+            Sign Out
+          </button>
+        </form>
+        <form
+          action={async () => {
+            'use server';
             await sendTestMail();
           }}
         >
@@ -26,7 +36,21 @@ export default function Home() {
             Test Mail
           </button>
         </form>
+        <User />
       </div>
     </main>
+  );
+}
+
+export async function User() {
+  const session = await auth();
+
+  // const session = await auth();
+  if (!session) return <div>Not authenticated</div>;
+
+  return (
+    <div>
+      <pre>{JSON.stringify(session, null, 2)}</pre>
+    </div>
   );
 }
