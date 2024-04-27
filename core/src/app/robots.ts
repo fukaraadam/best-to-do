@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: '/private/',
+      disallow: '/to-do/',
     },
     sitemap: process.env.NEXT_PUBLIC_APP_DOMAIN + '/sitemap.xml',
   };

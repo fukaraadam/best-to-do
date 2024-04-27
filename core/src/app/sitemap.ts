@@ -7,7 +7,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
     },
     {
-      url: process.env.NEXT_PUBLIC_APP_DOMAIN + '/login',
+      url: process.env.NEXT_PUBLIC_APP_DOMAIN + '/api/auth/signin',
+      lastModified: new Date(),
+    },
+    {
+      url: process.env.NEXT_PUBLIC_APP_DOMAIN + '/to-do',
       lastModified: new Date(),
     },
   ];
