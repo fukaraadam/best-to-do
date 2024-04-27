@@ -30,25 +30,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET,
   session: {
     strategy: 'jwt',
+    // updateAge: 0,
   },
   jwt: {
     encode: async (params) => {
-      console.log('encoded: ', params);
-      const encoded = jwt.sign(params.token || '', process.env.AUTH_SECRET, {
-        expiresIn: 5000,
+      // console.log('params from encode: ', params);
+      const { exp, iat, ...mainToken } = params.token || {};
+      const encoded = jwt.sign(mainToken, process.env.AUTH_SECRET, {
+        expiresIn: (params.maxAge || 60) * 1000,
       });
-      console.log('encrypt: ', encoded);
-      const decoded = jwt.verify(encoded, process.env.AUTH_SECRET);
-      console.log('verify: ', decoded);
+      // const decoded = jwt.verify(encoded, process.env.AUTH_SECRET);
+      // console.log('verify: ', decoded);
       return encoded;
     },
     decode: async (params) => {
-      console.log('encrypt from decode: ', params.token);
       const decoded = jwt.verify(
         params.token || '',
         process.env.AUTH_SECRET,
       ) as jwt.JwtPayload;
-      console.log('decoded: ', decoded);
+      // console.log('decoded: ', decoded);
       return decoded;
     },
   },
