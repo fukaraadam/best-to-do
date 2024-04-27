@@ -52,4 +52,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return decoded;
     },
   },
+  // <Warning> https://authjs.dev/reference/core/errors#untrustedhost
+  trustHost: true,
 });

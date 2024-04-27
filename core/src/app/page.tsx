@@ -36,21 +36,7 @@ export default function Home() {
             Test Mail
           </button>
         </form>
-        <User />
       </div>
     </main>
-  );
-}
-
-export async function User() {
-  const session = await auth();
-
-  // const session = await auth();
-  if (!session) return <div>Not authenticated</div>;
-
-  return (
-    <div>
-      <pre>{JSON.stringify(session, null, 2)}</pre>
-    </div>
   );
 }
