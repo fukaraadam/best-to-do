@@ -1,5 +1,5 @@
 import { signIn, auth } from '@/lib/auth';
-import { FileUploaderForm } from './client';
+import { FileUploaderForm } from './file-client';
 
 export default async function ToDo() {
   const session = await auth();

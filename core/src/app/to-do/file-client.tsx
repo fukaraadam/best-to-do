@@ -14,18 +14,28 @@ export function FileUploaderForm() {
         <SubmitButton />
         <p>{`state: ${state.isSuccess ? 'successful' : state.error}`}</p>
       </form>
+      <DownloadButton />
     </main>
   );
 }
 
 function SubmitButton() {
   const { pending } = useFormStatus();
-  console.log(pending);
 
   return (
-    <button type="submit" aria-disabled={pending}>
+    <button type="submit" aria-disabled={pending} className="btn btn-primary">
       Add
     </button>
+  );
+}
+
+function DownloadButton() {
+  const urlParams = new URLSearchParams({ userfile: 'icon.png' });
+
+  return (
+    <a href={`/api/file?${urlParams}`} download className="btn btn-secondary">
+      Download
+    </a>
   );
 }
 

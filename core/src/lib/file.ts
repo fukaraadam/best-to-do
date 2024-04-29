@@ -1,10 +1,10 @@
 'use server';
 
 import { join } from 'path';
-import { writeFile, readFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import { auth } from './auth';
 
-export type FormState = {
+type FormState = {
   isSuccess?: boolean;
   error?: string;
 };
