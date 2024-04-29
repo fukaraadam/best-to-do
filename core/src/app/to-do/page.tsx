@@ -1,4 +1,5 @@
 import { signIn, auth } from '@/lib/auth';
+import { FileUploaderForm } from './client';
 
 export default async function ToDo() {
   const session = await auth();
@@ -6,5 +7,9 @@ export default async function ToDo() {
     await signIn();
     return;
   }
-  return <main className="flex flex-col items-center"></main>;
+  return (
+    <main className="flex flex-col items-center">
+      <FileUploaderForm />
+    </main>
+  );
 }

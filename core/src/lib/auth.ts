@@ -27,6 +27,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
     GitHub,
   ],
+  callbacks: {
+    jwt({ token, user }) {
+      // console.log('user: ', user);
+      if (user) {
+        // User is available during sign-in
+        token.sub = user.id;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      // console.log('token: ', token);
+      // console.log('session: ', session);
+      if (token.sub) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
+  },
   secret: process.env.AUTH_SECRET,
   session: {
     strategy: 'jwt',
