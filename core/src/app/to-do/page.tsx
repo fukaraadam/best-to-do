@@ -1,5 +1,5 @@
 import { signIn, auth } from '@/lib/auth';
-import { FileUploaderForm } from './file-client';
+import { TodoList, NewTodoModal } from './todo-client';
 
 export default async function ToDo() {
   const session = await auth();
@@ -9,7 +9,8 @@ export default async function ToDo() {
   }
   return (
     <main className="flex flex-col items-center">
-      <FileUploaderForm />
+      <NewTodoModal />
+      <TodoList />
     </main>
   );
 }

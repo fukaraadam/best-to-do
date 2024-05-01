@@ -23,11 +23,12 @@ model User {
   sessions      Session[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
- 
+  Todo          Todo[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
- 
+
 model Account {
   userId            String
   type              String
@@ -40,33 +41,33 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
 }
- 
+
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@id([identifier, token])
 }
- 
+
 // Optional for WebAuthn support
 model Authenticator {
   id                   String  @id @default(cuid())
@@ -78,6 +79,42 @@ model Authenticator {
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Todo {
+  id        String   @id @default(cuid())
+  title     String?
+  details   String?
+  tags      String[]
+  completed Boolean  @default(false)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  image      FileImage?
+  attachment FileAttachment?
+}
+
+model FileImage {
+  id           String   @id @default(cuid())
+  size         Int
+  type         String
+  name         String
+  lastModified DateTime
+
+  todo   Todo   @relation(fields: [todoId], references: [id])
+  todoId String @unique
+}
+
+model FileAttachment {
+  id           String   @id @default(cuid())
+  size         Int
+  type         String
+  name         String
+  lastModified DateTime
+
+  todo   Todo   @relation(fields: [todoId], references: [id])
+  todoId String @unique
 }

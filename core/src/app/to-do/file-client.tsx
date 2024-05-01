@@ -1,21 +1,22 @@
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
-import { onUserFileUpload } from '@/lib/file';
+import { onUserFileUpload } from '@/lib/actions';
 
 export function FileUploaderForm() {
   const [state, action] = useFormState(onUserFileUpload, {});
 
   return (
-    <main>
-      <h1>File Uploader</h1>
+    <div>
       <form action={action}>
+        <input type="hidden" name="todoId" value="123" />
+        <input type="hidden" name="isImage" value="true" />
         <input type="file" name="file" />
         <SubmitButton />
         <p>{`state: ${state.isSuccess ? 'successful' : state.error}`}</p>
       </form>
       <DownloadButton />
-    </main>
+    </div>
   );
 }
 
