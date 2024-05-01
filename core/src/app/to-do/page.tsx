@@ -1,5 +1,5 @@
 import { signIn, auth } from '@/lib/auth';
-import { TodoList, NewTodoModal } from './todo-client';
+import { TodoList, TodoMenu } from './todo-client';
 
 export default async function ToDo() {
   const session = await auth();
@@ -8,8 +8,8 @@ export default async function ToDo() {
     return;
   }
   return (
-    <main className="flex flex-col items-center">
-      <NewTodoModal />
+    <main className="flex w-full flex-col items-center">
+      <TodoMenu />
       <TodoList />
     </main>
   );
