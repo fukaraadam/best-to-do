@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import Image from 'next/image';
 import { getTodoList, onCreateTodoItem } from '@/lib/actions';
@@ -15,7 +15,8 @@ export function TodoList() {
   const [state, setState] = useState<{ pending: Boolean; error?: string }>({
     pending: true,
   });
-  useEffect(() => {
+
+  const updateTodoList = useCallback(() => {
     getTodoList()
       .then((response) => {
         if (response.error) {
@@ -32,6 +33,10 @@ export function TodoList() {
         });
       });
   }, []);
+
+  useEffect(() => {
+    updateTodoList();
+  }, [updateTodoList]);
   return (
     <div className="mt-2 w-full overflow-x-auto">
       <table className="table">
@@ -124,8 +129,6 @@ function ListItem({ item }: { item: ListItemType }) {
 }
 
 export function TodoMenu() {
-  const [state, action] = useFormState(onCreateTodoItem, null);
-
   return (
     <>
       <button
@@ -136,65 +139,75 @@ export function TodoMenu() {
       >
         +New
       </button>
-      <dialog id="newTodoModal" className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box">
-          <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
-            <button className="btn btn-sm btn-circle btn-neutral absolute right-2 top-2 z-50">
-              ✕
-            </button>
-          </form>
-
-          <form action={action}>
-            <div className="card lg:card-side bg-base-100 shadow-xl">
-              <TodoImageEdit />
-              <div className="card-body">
-                <h2 className="card-title">
-                  <input
-                    type="text"
-                    name="title"
-                    placeholder="Title"
-                    className="input input-bordered w-full max-w-xs"
-                  />
-                </h2>
-                <p>
-                  <textarea
-                    placeholder="Details"
-                    name="details"
-                    className="textarea textarea-bordered textarea-xs w-full max-w-xs"
-                  ></textarea>
-                </p>
-                <input
-                  type="file"
-                  name="attachment"
-                  className="file-input file-input-bordered file-input-primary file-input-sm w-full max-w-xs"
-                />
-                <label className="label w-full max-w-xs cursor-pointer">
-                  <span className="label-text">Completed?</span>
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    name="completed"
-                  />
-                </label>
-                <div className="card-actions justify-end">
-                  <CreateSubmitButton />
-                </div>
-                {state?.error ? (
-                  <p className="text-error text-center">
-                    {typeof state.error === 'string'
-                      ? state.error
-                      : 'Unexpected Error'}
-                  </p>
-                ) : state?.data?.id ? (
-                  <p className="text-success text-center">Todo created!</p>
-                ) : null}
-              </div>
-            </div>
-          </form>
-        </div>
-      </dialog>
+      <TodoModal />
     </>
+  );
+}
+
+function TodoModal() {
+  const [state, action] = useFormState(onCreateTodoItem, null);
+  useEffect(() => {
+    if (state?.data?.id) {
+      setTimeout(() => {
+        (document.getElementById('newTodoModal') as any).close();
+      }, 2000);
+    }
+  });
+  return (
+    <dialog id="newTodoModal" className="modal modal-bottom sm:modal-middle">
+      <div className="modal-box">
+        <form method="dialog">
+          {/* if there is a button in form, it will close the modal */}
+          <button className="btn btn-sm btn-circle btn-neutral absolute right-2 top-2 z-50">
+            ✕
+          </button>
+        </form>
+
+        <form action={action}>
+          <div className="card lg:card-side bg-base-100 shadow-xl">
+            <TodoImageEdit />
+            <div className="card-body">
+              <h2 className="card-title">
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  className="input input-bordered w-full max-w-xs"
+                />
+              </h2>
+              <p>
+                <textarea
+                  placeholder="Details"
+                  name="details"
+                  className="textarea textarea-bordered textarea-xs w-full max-w-xs"
+                ></textarea>
+              </p>
+              <input
+                type="file"
+                name="attachment"
+                className="file-input file-input-bordered file-input-primary file-input-sm w-full max-w-xs"
+              />
+              <label className="label w-full max-w-xs cursor-pointer">
+                <span className="label-text">Completed?</span>
+                <input type="checkbox" className="checkbox" name="completed" />
+              </label>
+              <div className="card-actions justify-end">
+                <CreateSubmitButton />
+              </div>
+              {state?.error ? (
+                <p className="text-error text-center">
+                  {typeof state.error === 'string'
+                    ? state.error
+                    : 'Unexpected Error'}
+                </p>
+              ) : state?.data?.id ? (
+                <p className="text-success text-center">Todo created!</p>
+              ) : null}
+            </div>
+          </div>
+        </form>
+      </div>
+    </dialog>
   );
 }
 
