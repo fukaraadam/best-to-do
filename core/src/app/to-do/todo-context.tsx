@@ -13,13 +13,18 @@ interface ContextType {
   listState: { pending: Boolean; error?: string };
   modalTodoId?: string;
   setModalTodoId: (id: string | undefined) => void;
+  isModalOpen: boolean;
+  setIsModalOpen: (isOpen: boolean) => void;
 }
 
 export const ContextContent = createContext<ContextType>({
   todoList: [],
   updateTodoList: () => {},
   listState: { pending: true },
+  modalTodoId: undefined,
   setModalTodoId: () => {},
+  isModalOpen: false,
+  setIsModalOpen: () => {},
 });
 
 export function TodoContext({ children }: { children: React.ReactNode }) {
@@ -31,6 +36,7 @@ export function TodoContext({ children }: { children: React.ReactNode }) {
     pending: true,
   });
   const [modalTodoId, setModalTodoId] = useState<string | undefined>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const updateTodoList = useCallback(() => {
     setListState({ pending: true });
@@ -63,6 +69,8 @@ export function TodoContext({ children }: { children: React.ReactNode }) {
         listState,
         modalTodoId,
         setModalTodoId,
+        isModalOpen,
+        setIsModalOpen,
       }}
     >
       {children}

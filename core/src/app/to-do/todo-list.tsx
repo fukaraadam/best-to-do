@@ -56,7 +56,7 @@ export function TodoList() {
 }
 
 function ListItem({ item }: { item: ListItemType }) {
-  const { setModalTodoId } = useContext(ContextContent);
+  const { setModalTodoId, setIsModalOpen } = useContext(ContextContent);
   return (
     <tr>
       <th>
@@ -98,7 +98,7 @@ function ListItem({ item }: { item: ListItemType }) {
           className="btn btn-ghost btn-xs"
           onClick={() => {
             setModalTodoId(item.id);
-            (document.getElementById('todoModal') as any).showModal();
+            setIsModalOpen(true);
           }}
         >
           Edit

@@ -7,14 +7,21 @@ import { onCreateTodoItem } from '@/lib/actions';
 import { PhotoIcon } from '@heroicons/react/16/solid';
 
 export function TodoModal() {
-  const { updateTodoList, todoList, modalTodoId } = useContext(ContextContent);
+  const { isModalOpen } = useContext(ContextContent);
+  if (!isModalOpen) return null;
+  return <TodoModalComponent />;
+}
+
+export function TodoModalComponent() {
+  const { updateTodoList, todoList, modalTodoId, setIsModalOpen } =
+    useContext(ContextContent);
   const [state, action] = useFormState(onCreateTodoItem, null);
 
   useEffect(() => {
     if (state?.data?.id) {
       setTimeout(() => {
         updateTodoList();
-        (document.getElementById('todoModal') as any).close();
+        setIsModalOpen(false);
       }, 2000);
     }
   }, [state?.data?.id, updateTodoList]);
@@ -23,14 +30,17 @@ export function TodoModal() {
     ? todoList.find((item) => item.id === modalTodoId)
     : undefined;
   return (
-    <dialog id="todoModal" className="modal modal-bottom sm:modal-middle">
+    <dialog
+      id="todoModal"
+      className="modal modal-bottom sm:modal-middle modal-open"
+    >
       <div className="modal-box">
-        <form method="dialog">
-          {/* if there is a button in form, it will close the modal */}
-          <button className="btn btn-sm btn-circle btn-neutral absolute right-2 top-2 z-50">
-            ✕
-          </button>
-        </form>
+        <button
+          className="btn btn-sm btn-circle btn-neutral absolute right-2 top-2 z-50"
+          onClick={() => setIsModalOpen(false)}
+        >
+          ✕
+        </button>
 
         <form action={action}>
           <div className="card lg:card-side bg-base-100 shadow-xl">
