@@ -4,6 +4,7 @@ import { useEffect, useState, useContext } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import { ContextContent } from './todo-context';
 import { onCreateTodoItem } from '@/lib/actions';
+import { getFileUrl } from '@/app/api/file/helper';
 import { PhotoIcon } from '@heroicons/react/16/solid';
 
 export function TodoModal() {
@@ -120,9 +121,7 @@ function TodoImageEdit({ imageId }: { imageId?: string }) {
   const [image, setImage] = useState<File | null>();
   const uploadedImageUrl = image ? URL.createObjectURL(image) : undefined;
   const isChanged = image === undefined ? 'false' : 'true';
-  const imageUrl =
-    imageId &&
-    `/api/file?${new URLSearchParams({ fileId: imageId, isImage: 'true' })}`;
+  const imageUrl = imageId && getFileUrl(imageId, true);
   return (
     <figure className="relative">
       {imageId && <input type="hidden" name="imageId" defaultValue={imageId} />}
@@ -154,9 +153,7 @@ function TodoImageEdit({ imageId }: { imageId?: string }) {
 function TodoAttachmentEdit({ attachmentId }: { attachmentId?: string }) {
   const [attachment, setAttachment] = useState<File | null>();
   const isChanged = attachment === undefined ? 'false' : 'true';
-  const attachmentUrl =
-    attachmentId &&
-    `/api/file?${new URLSearchParams({ fileId: attachmentId, isImage: 'false' })}`;
+  const attachmentUrl = attachmentId && getFileUrl(attachmentId, false);
   return (
     <>
       {attachmentId && (

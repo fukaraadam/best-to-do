@@ -3,6 +3,7 @@
 import { useContext } from 'react';
 import Image from 'next/image';
 import { ContextContent, type ListItemType } from './todo-context';
+import { getFileUrl } from '@/app/api/file/helper';
 import { PhotoIcon } from '@heroicons/react/16/solid';
 
 export function TodoList() {
@@ -70,7 +71,7 @@ function ListItem({ item }: { item: ListItemType }) {
             <div className="mask mask-squircle h-12 w-12">
               {item.image?.id ? (
                 <Image
-                  src={`/api/file?${new URLSearchParams({ fileId: item.image.id, isImage: 'true' })}`}
+                  src={getFileUrl(item.image.id, true)}
                   alt="Todo List Avatar"
                   fill
                   className="object-cover"

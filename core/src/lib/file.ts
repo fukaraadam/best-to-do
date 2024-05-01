@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { createReadStream } from 'fs';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, rm } from 'fs/promises';
 import { ReadableOptions } from 'stream';
 
 export function getUserFilePath(
@@ -27,12 +27,19 @@ export async function uploadUserFile(
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  // With the file data in the buffer, you can do whatever you want with it.
-  // For this, we'll just write it to the filesystem in a new location
   const dir = getUserFilePath(userId, isImage);
   await mkdir(dir, { recursive: true });
   const filePath = getUserFilePath(userId, isImage, fileId);
   await writeFile(filePath, buffer);
+}
+
+export async function deleteUserFile(
+  isImage: boolean,
+  fileId: string,
+  userId: string,
+) {
+  const filePath = getUserFilePath(userId, isImage, fileId);
+  await rm(filePath);
 }
 
 /**

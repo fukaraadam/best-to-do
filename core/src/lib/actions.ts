@@ -1,6 +1,6 @@
 'use server';
 
-import { uploadUserFile } from './file';
+import { uploadUserFile, deleteUserFile } from './file';
 import prisma from './db';
 import { auth } from './auth';
 
@@ -153,6 +153,22 @@ async function createOrUpdateFile(
   }
   await uploadUserFile(file, isImage, newFile.id, userId);
   return newFile;
+}
+
+async function deleteFile(
+  isImage: boolean,
+  userId: string,
+  todoId: string,
+  fileId?: string | null,
+) {
+  if (fileId) {
+    if (isImage) {
+      await prisma.fileImage.delete({ where: { id: fileId } });
+    } else {
+      await prisma.fileAttachment.delete({ where: { id: fileId } });
+    }
+    await deleteUserFile(isImage, todoId, userId);
+  }
 }
 
 export async function onDeleteTodoItem(prevState: any, data: FormData) {
