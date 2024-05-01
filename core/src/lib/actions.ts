@@ -81,10 +81,12 @@ export async function onCreateTodoItem(prevState: any, data: FormData) {
         imageId,
       );
       newTodo.image = imageUpResult;
+    } else {
+      await deleteFile(true, session.user.id, newTodo.id, imageId);
     }
   }
 
-  // Todo Atachment
+  // Todo Attachment
   const isAttachmentExist =
     attachment instanceof File && attachment.name !== 'undefined';
   if (attachmentChanged) {
@@ -97,6 +99,8 @@ export async function onCreateTodoItem(prevState: any, data: FormData) {
         attachmentId,
       );
       newTodo.attachment = attachmentUpResult;
+    } else {
+      await deleteFile(false, session.user.id, newTodo.id, attachmentId);
     }
   }
 
@@ -181,9 +185,20 @@ export async function onDeleteTodoItem(prevState: any, data: FormData) {
     return { error: 'Missing todo ids' };
   }
 
-  const removedList = await prisma.todo.deleteMany({
-    where: { id: { in: todoIds }, userId: session.user.id },
-  });
+  for (const id of todoIds) {
+    const removedItem = await prisma.todo.delete({
+      where: { id, userId: session.user.id },
+      include: {
+        image: true,
+        attachment: true,
+      },
+    });
 
-  return { data: removedList };
+    if (removedItem.image) {
+      await deleteFile(true, session.user.id, id, removedItem.image.id);
+    }
+    if (removedItem.attachment) {
+      await deleteFile(false, session.user.id, id, removedItem.attachment.id);
+    }
+  }
 }

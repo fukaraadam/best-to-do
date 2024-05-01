@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useContext } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
+import Image from 'next/image';
 import { ContextContent } from './todo-context';
 import { onCreateTodoItem } from '@/lib/actions';
 import { getFileUrl } from '@/app/api/file/helper';
@@ -123,10 +124,16 @@ function TodoImageEdit({ imageId }: { imageId?: string }) {
   const isChanged = image === undefined ? 'false' : 'true';
   const imageUrl = imageId && getFileUrl(imageId, true);
   return (
-    <figure className="relative">
+    <figure className="relative aspect-square lg:w-1/2">
       {imageId && <input type="hidden" name="imageId" defaultValue={imageId} />}
       {uploadedImageUrl || imageUrl ? (
-        <img src={uploadedImageUrl || imageUrl} alt="Todo Image" />
+        <Image
+          src={uploadedImageUrl || imageUrl || ''}
+          alt="Todo Image"
+          fill
+          className="object-contain"
+          unoptimized={true}
+        />
       ) : (
         <PhotoIcon className="h-full w-full" />
       )}
