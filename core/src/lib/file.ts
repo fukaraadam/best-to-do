@@ -2,7 +2,6 @@ import { join } from 'path';
 import { createReadStream } from 'fs';
 import { writeFile, mkdir } from 'fs/promises';
 import { ReadableOptions } from 'stream';
-import { auth } from './auth';
 
 export function getUserFilePath(
   userId: string,
@@ -19,36 +18,21 @@ export function getUserFilePath(
   return fileId ? join(dirPath, fileId) : dirPath;
 }
 
-export type UploadState = {
-  isSuccess?: boolean;
-  error?: string;
-};
 export async function uploadUserFile(
   file: File,
   isImage: boolean,
   fileId: string,
-): Promise<UploadState> {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { error: 'Not authenticated' };
-  }
-
-  if (isImage && !file.type.startsWith('image')) {
-    return { error: 'Invalid image type' };
-  }
-
+  userId: string,
+) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
   // With the file data in the buffer, you can do whatever you want with it.
   // For this, we'll just write it to the filesystem in a new location
-  const dir = getUserFilePath(session.user.id, isImage);
+  const dir = getUserFilePath(userId, isImage);
   await mkdir(dir, { recursive: true });
-  const filePath = getUserFilePath(session.user.id, isImage, fileId);
+  const filePath = getUserFilePath(userId, isImage, fileId);
   await writeFile(filePath, buffer);
-  console.log(`open ${filePath} to see the uploaded file`);
-
-  return { isSuccess: true };
 }
 
 /**

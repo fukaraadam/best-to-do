@@ -19,12 +19,12 @@ export function TodoModalComponent() {
 
   useEffect(() => {
     if (state?.data?.id) {
+      updateTodoList();
       setTimeout(() => {
-        updateTodoList();
         setIsModalOpen(false);
       }, 2000);
     }
-  }, [state?.data?.id, updateTodoList]);
+  }, [state?.data?.id, updateTodoList, setIsModalOpen]);
 
   const item = modalTodoId
     ? todoList.find((item) => item.id === modalTodoId)
@@ -44,13 +44,7 @@ export function TodoModalComponent() {
 
         <form action={action}>
           <div className="card lg:card-side bg-base-100 shadow-xl">
-            <TodoImageEdit
-              imageUrl={
-                item?.image
-                  ? `/api/file?${new URLSearchParams({ fileId: item.image.id, isImage: 'true' })}`
-                  : undefined
-              }
-            />
+            <TodoImageEdit imageId={item?.image?.id} />
             <div className="card-body">
               <h2 className="card-title">
                 {item?.id && (
@@ -72,11 +66,12 @@ export function TodoModalComponent() {
                   defaultValue={item?.details || ''}
                 ></textarea>
               </p>
-              <input
+              {/* <input
                 type="file"
                 name="attachment"
                 className="file-input file-input-bordered file-input-primary file-input-sm w-full max-w-xs"
-              />
+              /> */}
+              <TodoAttachmentEdit attachmentId={item?.attachment?.id} />
               <label className="label w-full max-w-xs cursor-pointer">
                 <span className="label-text">Completed?</span>
                 <input
@@ -121,11 +116,16 @@ function SubmitButton({ itemId }: { itemId?: string }) {
   );
 }
 
-function TodoImageEdit({ imageUrl }: { imageUrl?: string }) {
-  const [image, setImage] = useState<File | null>(null);
+function TodoImageEdit({ imageId }: { imageId?: string }) {
+  const [image, setImage] = useState<File | null>();
   const uploadedImageUrl = image ? URL.createObjectURL(image) : undefined;
+  const isChanged = image === undefined ? 'false' : 'true';
+  const imageUrl =
+    imageId &&
+    `/api/file?${new URLSearchParams({ fileId: imageId, isImage: 'true' })}`;
   return (
     <figure className="relative">
+      {imageId && <input type="hidden" name="imageId" defaultValue={imageId} />}
       {uploadedImageUrl || imageUrl ? (
         <img src={uploadedImageUrl || imageUrl} alt="Todo Image" />
       ) : (
@@ -135,7 +135,7 @@ function TodoImageEdit({ imageUrl }: { imageUrl?: string }) {
         htmlFor="newTodoImage"
         className="btn btn-neutral absolute bottom-2"
       >
-        Select Image
+        Select Image{isChanged === 'true' && '*'}
       </label>
       <input
         type="file"
@@ -146,6 +146,38 @@ function TodoImageEdit({ imageUrl }: { imageUrl?: string }) {
         accept="image/*"
         onChange={(e) => setImage(e.target.files?.[0] || null)}
       />
+      <input type="hidden" name="imageChanged" value={isChanged} />
     </figure>
+  );
+}
+
+function TodoAttachmentEdit({ attachmentId }: { attachmentId?: string }) {
+  const [attachment, setAttachment] = useState<File | null>();
+  const isChanged = attachment === undefined ? 'false' : 'true';
+  const attachmentUrl =
+    attachmentId &&
+    `/api/file?${new URLSearchParams({ fileId: attachmentId, isImage: 'false' })}`;
+  return (
+    <>
+      {attachmentId && (
+        <input type="hidden" name="attachmentId" defaultValue={attachmentId} />
+      )}
+      {attachmentUrl && (
+        <a href={attachmentUrl} download className="btn btn-sm btn-primary">
+          Download Attachment
+        </a>
+      )}
+      <label htmlFor="newTodoAttachment" className="btn btn-neutral">
+        Select Attachment{isChanged === 'true' && '*'}
+      </label>
+      <input
+        type="file"
+        id="newTodoAttachment"
+        name="attachment"
+        className="hidden"
+        onChange={(e) => setAttachment(e.target.files?.[0] || null)}
+      />
+      <input type="hidden" name="attachmentChanged" value={isChanged} />
+    </>
   );
 }
