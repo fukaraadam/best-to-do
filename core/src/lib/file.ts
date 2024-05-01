@@ -33,6 +33,10 @@ export async function uploadUserFile(
     return { error: 'Not authenticated' };
   }
 
+  if (isImage && !file.type.startsWith('image')) {
+    return { error: 'Invalid image type' };
+  }
+
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 

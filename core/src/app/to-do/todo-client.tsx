@@ -147,12 +147,7 @@ export function TodoMenu() {
 
           <form action={action}>
             <div className="card lg:card-side bg-base-100 shadow-xl">
-              <figure>
-                <img
-                  src="https://daisyui.com/images/stock/photo-1494232410401-ad00d5433cfa.jpg"
-                  alt="Album"
-                />
-              </figure>
+              <TodoImageEdit />
               <div className="card-body">
                 <h2 className="card-title">
                   <input
@@ -169,16 +164,31 @@ export function TodoMenu() {
                     className="textarea textarea-bordered textarea-xs w-full max-w-xs"
                   ></textarea>
                 </p>
+                <input
+                  type="file"
+                  name="attachment"
+                  className="file-input file-input-bordered file-input-primary file-input-sm w-full max-w-xs"
+                />
+                <label className="label w-full max-w-xs cursor-pointer">
+                  <span className="label-text">Completed?</span>
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    name="completed"
+                  />
+                </label>
                 <div className="card-actions justify-end">
                   <CreateSubmitButton />
-                  {state?.error && (
-                    <p className="text-center text-red-500">
-                      {typeof state.error === 'string'
-                        ? state.error
-                        : 'Unexpected Error'}
-                    </p>
-                  )}
                 </div>
+                {state?.error ? (
+                  <p className="text-error text-center">
+                    {typeof state.error === 'string'
+                      ? state.error
+                      : 'Unexpected Error'}
+                  </p>
+                ) : state?.data?.id ? (
+                  <p className="text-success text-center">Todo created!</p>
+                ) : null}
               </div>
             </div>
           </form>
@@ -192,10 +202,42 @@ function CreateSubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <div className="modal-action">
-      <button type="submit" aria-disabled={pending} className="btn btn-primary">
-        Create
-      </button>
-    </div>
+    <button
+      type="submit"
+      aria-disabled={pending}
+      className="btn btn-primary"
+      disabled={pending}
+    >
+      {pending ? 'Create' : 'Creating'}
+    </button>
+  );
+}
+
+function TodoImageEdit({ imageUrl }: { imageUrl?: string }) {
+  const [image, setImage] = useState<File | null>(null);
+  const uploadedImageUrl = image ? URL.createObjectURL(image) : undefined;
+  return (
+    <figure className="relative">
+      {uploadedImageUrl || imageUrl ? (
+        <img src={uploadedImageUrl || imageUrl} alt="Todo Image" />
+      ) : (
+        <PhotoIcon className="h-full w-full" />
+      )}
+      <label
+        htmlFor="newTodoImage"
+        className="btn btn-neutral absolute bottom-2"
+      >
+        Select Image
+      </label>
+      <input
+        type="file"
+        id="newTodoImage"
+        name="image"
+        // className="file-input file-input-bordered file-input-primary absolute bottom-2 w-full max-w-xs"
+        className="hidden"
+        accept="image/*"
+        onChange={(e) => setImage(e.target.files?.[0] || null)}
+      />
+    </figure>
   );
 }
