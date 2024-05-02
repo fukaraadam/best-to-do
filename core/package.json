@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "dotenv -c -- prisma generate && next build",
     "start": "next start",
     "prisma:open": "dotenv -c -- prisma studio",
     "prisma:push": "dotenv -c -- prisma db push",
