@@ -71,12 +71,14 @@ export async function onCreateTodoItem(prevState: any, data: FormData) {
       image.name !== 'undefined' &&
       image.type.startsWith('image');
     if (!isValidImage) return { error: 'Invalid image type' };
-    const imageUpResult = await createOrUpdateFile(
+    if (imageAction === 'update' && newTodo.image) {
+      await deleteFile(true, session.user.id, newTodo.image.id);
+    }
+    const imageUpResult = await createFile(
       image,
       true,
       session.user.id,
       newTodo.id,
-      newTodo.image?.id,
     );
     newTodo.image = imageUpResult;
   } else if (imageAction === 'delete' && newTodo.image) {
@@ -88,12 +90,14 @@ export async function onCreateTodoItem(prevState: any, data: FormData) {
     const isValidFile =
       attachment instanceof File && attachment.name !== 'undefined';
     if (!isValidFile) return { error: 'Invalid file type' };
-    const attachmentUpResult = await createOrUpdateFile(
+    if (attachmentAction === 'update' && newTodo.attachment) {
+      await deleteFile(false, session.user.id, newTodo.attachment.id);
+    }
+    const attachmentUpResult = await createFile(
       attachment,
       false,
       session.user.id,
       newTodo.id,
-      newTodo.attachment?.id,
     );
     newTodo.attachment = attachmentUpResult;
   } else if (attachmentAction === 'delete' && newTodo.attachment) {
@@ -103,53 +107,31 @@ export async function onCreateTodoItem(prevState: any, data: FormData) {
   return { data: newTodo };
 }
 
-async function createOrUpdateFile(
+async function createFile(
   file: File,
   isImage: boolean,
   userId: string,
   todoId: string,
-  fileId?: string | null,
 ) {
   let newFile;
-  if (fileId) {
-    // update
-    const data = {
-      size: file.size,
-      type: file.type,
-      name: file.name,
-      lastModified: new Date(file.lastModified).toISOString(),
-    };
 
-    if (isImage) {
-      newFile = await prisma.fileImage.update({
-        where: { id: fileId },
-        data,
-      });
-    } else {
-      newFile = await prisma.fileAttachment.update({
-        where: { id: fileId },
-        data,
-      });
-    }
+  // create
+  const data = {
+    size: file.size,
+    type: file.type,
+    name: file.name,
+    lastModified: new Date(file.lastModified).toISOString(),
+    todoId: todoId,
+  };
+
+  if (isImage) {
+    newFile = await prisma.fileImage.create({
+      data,
+    });
   } else {
-    // create
-    const data = {
-      size: file.size,
-      type: file.type,
-      name: file.name,
-      lastModified: new Date(file.lastModified).toISOString(),
-      todoId: todoId,
-    };
-
-    if (isImage) {
-      newFile = await prisma.fileImage.create({
-        data,
-      });
-    } else {
-      newFile = await prisma.fileAttachment.create({
-        data,
-      });
-    }
+    newFile = await prisma.fileAttachment.create({
+      data,
+    });
   }
   await uploadUserFile(file, isImage, newFile.id, userId);
   return newFile;
