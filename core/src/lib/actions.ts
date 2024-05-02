@@ -16,11 +16,14 @@ export async function getTodoList() {
       image: true,
       attachment: true,
     },
+    orderBy: {
+      lastModified: 'desc',
+    },
   });
   return { data };
 }
 
-export async function onCreateTodoItem(prevState: any, data: FormData) {
+export async function onTodoItem(prevState: any, data: FormData) {
   const session = await auth();
   if (!session?.user?.id) {
     return { error: 'Not authenticated' };
@@ -38,6 +41,7 @@ export async function onCreateTodoItem(prevState: any, data: FormData) {
     details: data.get('details') as string | null,
     tags: [],
     completed: data.get('completed') === 'on',
+    lastModified: new Date().toISOString(),
     userId: session.user.id,
   };
 

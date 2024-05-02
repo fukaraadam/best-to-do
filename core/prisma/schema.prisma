@@ -89,6 +89,7 @@ model Todo {
   details   String?
   tags      String[]
   completed Boolean  @default(false)
+  lastModified DateTime
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String

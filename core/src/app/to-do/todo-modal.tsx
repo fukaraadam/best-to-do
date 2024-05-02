@@ -4,7 +4,7 @@ import { useEffect, useState, useContext } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import Image from 'next/image';
 import { ContextContent } from './todo-context';
-import { onCreateTodoItem } from '@/lib/actions';
+import { onTodoItem } from '@/lib/actions';
 import { getFileUrl } from '@/app/api/file/helper';
 import {
   PhotoIcon,
@@ -21,7 +21,7 @@ export function TodoModal() {
 export function TodoModalComponent() {
   const { updateTodoList, todoList, modalTodoId, setIsModalOpen } =
     useContext(ContextContent);
-  const [state, action] = useFormState(onCreateTodoItem, null);
+  const [state, action] = useFormState(onTodoItem, null);
 
   useEffect(() => {
     if (state?.data?.id) {
