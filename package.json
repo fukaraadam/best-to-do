@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "npm run dev --workspace=core",
     "build": "npm run build --workspace=core",
+    "start": "npm run start --workspace=core",
     "utility:icon-generator": "npm run icon-generator --workspace=utility-scripts",
     "lint": "npm run lint --workspaces --if-present",
     "prettier": "prettier --write ."
