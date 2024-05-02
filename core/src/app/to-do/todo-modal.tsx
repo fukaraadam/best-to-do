@@ -28,7 +28,7 @@ export function TodoModalComponent() {
       updateTodoList();
       setTimeout(() => {
         setIsModalOpen(false);
-      }, 2000);
+      }, 1000);
     }
   }, [state?.data?.id, updateTodoList, setIsModalOpen]);
 
@@ -87,6 +87,13 @@ export function TodoModalComponent() {
                   defaultChecked={item?.completed || false}
                 />
               </label>
+              <input
+                type="text"
+                name="tag"
+                placeholder="Tag"
+                className="input input-bordered input-xs w-full max-w-xs"
+                defaultValue={item?.tag || ''}
+              />
               <div className="card-actions justify-end">
                 <SubmitButton itemId={item?.id} />
               </div>

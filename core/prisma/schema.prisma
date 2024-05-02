@@ -87,7 +87,7 @@ model Todo {
   id        String   @id @default(cuid())
   title     String?
   details   String?
-  tags      String[]
+  tag       String?
   completed Boolean  @default(false)
   lastModified DateTime
 

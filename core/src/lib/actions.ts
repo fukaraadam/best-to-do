@@ -4,14 +4,29 @@ import { uploadUserFile, deleteUserFile } from './file';
 import prisma from './db';
 import { auth } from './auth';
 
-export async function getTodoList() {
+export async function getTodoList({
+  tag,
+  search,
+}: {
+  tag?: string;
+  search?: string;
+}) {
   const session = await auth();
   if (!session?.user?.id) {
     return { error: 'Not authenticated' };
   }
 
   const data = await prisma.todo.findMany({
-    where: { userId: session.user.id },
+    where: {
+      userId: session.user.id,
+      tag,
+      ...(search && {
+        OR: [
+          { title: { contains: search } },
+          { details: { contains: search } },
+        ],
+      }),
+    },
     include: {
       image: true,
       attachment: true,
@@ -20,7 +35,17 @@ export async function getTodoList() {
       lastModified: 'desc',
     },
   });
-  return { data };
+
+  const uniqueTags = await prisma.todo.groupBy({
+    where: { userId: session.user.id },
+    by: ['tag'],
+  });
+
+  const tags: string[] = uniqueTags
+    .map((todo) => todo.tag)
+    .filter(Boolean) as string[];
+
+  return { data, tags };
 }
 
 export async function onTodoItem(prevState: any, data: FormData) {
@@ -39,7 +64,7 @@ export async function onTodoItem(prevState: any, data: FormData) {
   const todoData = {
     title: data.get('title') as string | null,
     details: data.get('details') as string | null,
-    tags: [],
+    tag: data.get('tag') as string | null,
     completed: data.get('completed') === 'on',
     lastModified: new Date().toISOString(),
     userId: session.user.id,

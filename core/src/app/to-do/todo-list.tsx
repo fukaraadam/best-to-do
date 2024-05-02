@@ -84,11 +84,9 @@ function ListItem({ item }: { item: ListItemType }) {
           </div>
           <div>
             <div className="font-bold">{item.title}</div>
-            {item.tags.map((tag, index) => (
-              <span key={index} className="badge badge-ghost badge-sm">
-                {tag}
-              </span>
-            ))}
+            {item.tag && (
+              <span className="badge badge-ghost badge-sm">{item.tag}</span>
+            )}
           </div>
         </div>
       </td>

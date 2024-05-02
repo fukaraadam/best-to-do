@@ -9,7 +9,10 @@ export type ListItemType = NonNullable<
 
 interface ContextType {
   todoList: ListItemType[];
-  updateTodoList: () => void;
+  tagList: string[];
+  setSelectedTag: (tag: string | undefined) => void;
+  setSearch: (tag: string | undefined) => void;
+  updateTodoList: (filter?: { tag?: string; search?: string }) => void;
   listState: { pending: Boolean; error?: string };
   modalTodoId?: string;
   setModalTodoId: (id: string | undefined) => void;
@@ -19,6 +22,9 @@ interface ContextType {
 
 export const ContextContent = createContext<ContextType>({
   todoList: [],
+  tagList: [],
+  setSelectedTag: () => {},
+  setSearch: () => {},
   updateTodoList: () => {},
   listState: { pending: true },
   modalTodoId: undefined,
@@ -29,6 +35,9 @@ export const ContextContent = createContext<ContextType>({
 
 export function TodoContext({ children }: { children: React.ReactNode }) {
   const [todoList, setTodoList] = useState<ListItemType[]>([]);
+  const [tagList, setTagList] = useState<string[]>([]);
+  const [selectedTag, setSelectedTag] = useState<string>();
+  const [search, setSearch] = useState<string>();
   const [listState, setListState] = useState<{
     pending: Boolean;
     error?: string;
@@ -40,7 +49,7 @@ export function TodoContext({ children }: { children: React.ReactNode }) {
 
   const updateTodoList = useCallback(() => {
     setListState({ pending: true });
-    getTodoList()
+    getTodoList({ tag: selectedTag, search })
       .then((response) => {
         if (response.error) {
           setListState({ pending: false, error: response.error });
@@ -48,6 +57,7 @@ export function TodoContext({ children }: { children: React.ReactNode }) {
         }
         setListState({ pending: false });
         setTodoList(response.data || []);
+        setTagList(response.tags || []);
       })
       .catch((error) => {
         setListState({
@@ -55,7 +65,7 @@ export function TodoContext({ children }: { children: React.ReactNode }) {
           error: error?.message || 'Unexpected error',
         });
       });
-  }, []);
+  }, [selectedTag, search]);
 
   useEffect(() => {
     updateTodoList();
@@ -65,6 +75,9 @@ export function TodoContext({ children }: { children: React.ReactNode }) {
     <ContextContent.Provider
       value={{
         todoList,
+        tagList,
+        setSelectedTag,
+        setSearch,
         updateTodoList,
         listState,
         modalTodoId,
