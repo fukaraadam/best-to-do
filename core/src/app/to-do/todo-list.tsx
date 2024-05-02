@@ -102,7 +102,7 @@ function ListItem({ item }: { item: ListItemType }) {
             setIsModalOpen(true);
           }}
         >
-          Edit
+          Details
         </button>
       </th>
     </tr>

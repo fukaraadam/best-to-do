@@ -39,7 +39,11 @@ export async function deleteUserFile(
   userId: string,
 ) {
   const filePath = getUserFilePath(userId, isImage, fileId);
-  await rm(filePath);
+  try {
+    await rm(filePath);
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 /**

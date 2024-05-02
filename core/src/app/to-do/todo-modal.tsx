@@ -6,7 +6,11 @@ import Image from 'next/image';
 import { ContextContent } from './todo-context';
 import { onCreateTodoItem } from '@/lib/actions';
 import { getFileUrl } from '@/app/api/file/helper';
-import { PhotoIcon } from '@heroicons/react/16/solid';
+import {
+  PhotoIcon,
+  TrashIcon,
+  ArrowDownOnSquareIcon,
+} from '@heroicons/react/16/solid';
 
 export function TodoModal() {
   const { isModalOpen } = useContext(ContextContent);
@@ -118,70 +122,130 @@ function SubmitButton({ itemId }: { itemId?: string }) {
   );
 }
 
+type FileAction =
+  | {
+      action: 'create' | 'update';
+      file: File;
+    }
+  | {
+      action: 'delete';
+      file: null;
+      fileId: string;
+    };
+
 function TodoImageEdit({ imageId }: { imageId?: string }) {
-  const [image, setImage] = useState<File | null>();
-  const uploadedImageUrl = image ? URL.createObjectURL(image) : undefined;
-  const isChanged = image === undefined ? 'false' : 'true';
-  const imageUrl = imageId && getFileUrl(imageId, true);
+  // null means remove image, undefined means no change
+  const [fileAction, setFileAction] = useState<FileAction>();
+  const imageUrl = fileAction?.file
+    ? URL.createObjectURL(fileAction.file)
+    : fileAction === undefined && imageId
+      ? getFileUrl(imageId, true)
+      : undefined;
+
+  const onImageUpdate = (img: File | null) => {
+    if (img && !img.type.startsWith('image')) return;
+    else if (img && !imageId) setFileAction({ action: 'create', file: img });
+    else if (img && imageId) setFileAction({ action: 'update', file: img });
+    else if (img === null && imageId)
+      setFileAction({ action: 'delete', file: null, fileId: imageId });
+    else setFileAction(undefined);
+  };
   return (
     <figure className="relative aspect-square lg:w-1/2">
-      {imageId && <input type="hidden" name="imageId" defaultValue={imageId} />}
-      {uploadedImageUrl || imageUrl ? (
-        <Image
-          src={uploadedImageUrl || imageUrl || ''}
-          alt="Todo Image"
-          fill
-          className="object-contain"
-          unoptimized={true}
-        />
+      {imageUrl ? (
+        <>
+          <Image
+            src={imageUrl}
+            alt="Todo Image"
+            fill
+            className="object-contain"
+            unoptimized={true}
+          />
+          <button
+            className="btn btn-sm btn-circle btn-error absolute right-2 top-2"
+            onClick={() => onImageUpdate(null)}
+          >
+            <TrashIcon className="h-full w-full" />
+          </button>
+        </>
       ) : (
         <PhotoIcon className="h-full w-full" />
       )}
       <label
         htmlFor="newTodoImage"
-        className="btn btn-neutral absolute bottom-2"
+        className="btn btn-primary absolute bottom-2"
       >
-        Select Image{isChanged === 'true' && '*'}
+        Select Image{fileAction && '*'}
       </label>
       <input
         type="file"
         id="newTodoImage"
         name="image"
-        // className="file-input file-input-bordered file-input-primary absolute bottom-2 w-full max-w-xs"
         className="hidden"
         accept="image/*"
-        onChange={(e) => setImage(e.target.files?.[0] || null)}
+        onChange={(e) => {
+          e.target.files?.[0] && onImageUpdate(e.target.files?.[0]);
+        }}
       />
-      <input type="hidden" name="imageChanged" value={isChanged} />
+      <input type="hidden" name="imageAction" value={fileAction?.action} />
     </figure>
   );
 }
 
 function TodoAttachmentEdit({ attachmentId }: { attachmentId?: string }) {
-  const [attachment, setAttachment] = useState<File | null>();
-  const isChanged = attachment === undefined ? 'false' : 'true';
+  // null means remove image, undefined means no change
+  const [fileAction, setFileAction] = useState<FileAction>();
   const attachmentUrl = attachmentId && getFileUrl(attachmentId, false);
+  const isDeletable =
+    !(fileAction?.action === 'delete') && !!(attachmentId || fileAction?.file);
+
+  const onFileUpdate = (file: File | null) => {
+    if (file && !attachmentId) setFileAction({ action: 'create', file: file });
+    else if (file && attachmentId)
+      setFileAction({ action: 'update', file: file });
+    else if (file === null && attachmentId)
+      setFileAction({ action: 'delete', file: null, fileId: attachmentId });
+    else setFileAction(undefined);
+  };
   return (
-    <>
-      {attachmentId && (
-        <input type="hidden" name="attachmentId" defaultValue={attachmentId} />
-      )}
-      {attachmentUrl && (
-        <a href={attachmentUrl} download className="btn btn-sm btn-primary">
-          Download Attachment
-        </a>
-      )}
-      <label htmlFor="newTodoAttachment" className="btn btn-neutral">
-        Select Attachment{isChanged === 'true' && '*'}
-      </label>
-      <input
-        type="file"
-        id="newTodoAttachment"
-        name="attachment"
-        className="hidden"
-        onChange={(e) => setAttachment(e.target.files?.[0] || null)}
-      />
-      <input type="hidden" name="attachmentChanged" value={isChanged} />
-    </>
+    <div className="flex flex-col items-center">
+      <h3>Attachment: </h3>
+      <div className="join">
+        <label htmlFor="newTodoAttachment" className="btn btn-neutral btn-sm">
+          Select{fileAction && '*'}
+        </label>
+        {attachmentUrl && (
+          <a
+            href={attachmentUrl}
+            download
+            className="btn btn-sm btn-primary join-item"
+          >
+            <ArrowDownOnSquareIcon className="h-full w-full" />
+          </a>
+        )}
+        {isDeletable && (
+          <button
+            className="btn btn-sm btn-error"
+            onClick={() => onFileUpdate(null)}
+          >
+            <TrashIcon className="h-full w-full" />
+          </button>
+        )}
+        <input
+          type="file"
+          id="newTodoAttachment"
+          name="attachment"
+          className="hidden"
+          onChange={(e) => {
+            e.target.files?.[0] && onFileUpdate(e.target.files?.[0]);
+          }}
+        />
+        <input
+          type="hidden"
+          name="attachmentAction"
+          value={fileAction?.action}
+        />
+      </div>
+    </div>
   );
 }

@@ -28,12 +28,10 @@ export async function onCreateTodoItem(prevState: any, data: FormData) {
   const todoId = data.get('id') as string | null;
 
   const image = data.get('image');
-  const imageId = data.get('imageId') as string | null;
-  const imageChanged = data.get('imageChanged') === 'true';
+  const imageAction = data.get('imageAction') as string | null;
 
   const attachment = data.get('attachment');
-  const attachmentId = data.get('attachmentId') as string | null;
-  const attachmentChanged = data.get('attachmentChanged') === 'true';
+  const attachmentAction = data.get('attachmentAction') as string | null;
 
   const todoData = {
     title: data.get('title') as string | null,
@@ -67,41 +65,39 @@ export async function onCreateTodoItem(prevState: any, data: FormData) {
   }
 
   // Todo image
-  const isImageExist = image instanceof File && image.name !== 'undefined';
-  if (imageChanged) {
-    if (isImageExist) {
-      if (!image.type.startsWith('image')) {
-        return { error: 'Invalid image type' };
-      }
-      const imageUpResult = await createOrUpdateFile(
-        image,
-        true,
-        session.user.id,
-        newTodo.id,
-        imageId,
-      );
-      newTodo.image = imageUpResult;
-    } else {
-      await deleteFile(true, session.user.id, newTodo.id, imageId);
-    }
+  if (imageAction === 'create' || imageAction === 'update') {
+    const isValidImage =
+      image instanceof File &&
+      image.name !== 'undefined' &&
+      image.type.startsWith('image');
+    if (!isValidImage) return { error: 'Invalid image type' };
+    const imageUpResult = await createOrUpdateFile(
+      image,
+      true,
+      session.user.id,
+      newTodo.id,
+      newTodo.image?.id,
+    );
+    newTodo.image = imageUpResult;
+  } else if (imageAction === 'delete' && newTodo.image) {
+    await deleteFile(true, session.user.id, newTodo.image.id);
   }
 
   // Todo Attachment
-  const isAttachmentExist =
-    attachment instanceof File && attachment.name !== 'undefined';
-  if (attachmentChanged) {
-    if (isAttachmentExist) {
-      const attachmentUpResult = await createOrUpdateFile(
-        attachment,
-        false,
-        session.user.id,
-        newTodo.id,
-        attachmentId,
-      );
-      newTodo.attachment = attachmentUpResult;
-    } else {
-      await deleteFile(false, session.user.id, newTodo.id, attachmentId);
-    }
+  if (attachmentAction === 'create' || attachmentAction === 'update') {
+    const isValidFile =
+      attachment instanceof File && attachment.name !== 'undefined';
+    if (!isValidFile) return { error: 'Invalid file type' };
+    const attachmentUpResult = await createOrUpdateFile(
+      attachment,
+      false,
+      session.user.id,
+      newTodo.id,
+      newTodo.attachment?.id,
+    );
+    newTodo.attachment = attachmentUpResult;
+  } else if (attachmentAction === 'delete' && newTodo.attachment) {
+    await deleteFile(false, session.user.id, newTodo.attachment.id);
   }
 
   return { data: newTodo };
@@ -162,8 +158,7 @@ async function createOrUpdateFile(
 async function deleteFile(
   isImage: boolean,
   userId: string,
-  todoId: string,
-  fileId?: string | null,
+  fileId: string | null,
 ) {
   if (fileId) {
     if (isImage) {
@@ -171,7 +166,7 @@ async function deleteFile(
     } else {
       await prisma.fileAttachment.delete({ where: { id: fileId } });
     }
-    await deleteUserFile(isImage, todoId, userId);
+    await deleteUserFile(isImage, fileId, userId);
   }
 }
 
@@ -195,10 +190,10 @@ export async function onDeleteTodoItem(prevState: any, data: FormData) {
     });
 
     if (removedItem.image) {
-      await deleteFile(true, session.user.id, id, removedItem.image.id);
+      await deleteFile(true, session.user.id, removedItem.image.id);
     }
     if (removedItem.attachment) {
-      await deleteFile(false, session.user.id, id, removedItem.attachment.id);
+      await deleteFile(false, session.user.id, removedItem.attachment.id);
     }
   }
 }
