@@ -2,10 +2,19 @@
 
 import { useContext } from 'react';
 import { ContextContent } from './todo-context';
+import { deleteTodoItems } from '@/lib/actions';
 
 export function TodoMenu() {
-  const { tagList, setSelectedTag, setSearch, setModalTodoId, setIsModalOpen } =
-    useContext(ContextContent);
+  const {
+    tagList,
+    setSelectedTag,
+    setSearch,
+    checkedList,
+    setCheckedList,
+    updateTodoList,
+    setModalTodoId,
+    setIsModalOpen,
+  } = useContext(ContextContent);
   const onTagChange = (e: any) => {
     setSelectedTag(e.target.value === 'All Tags' ? undefined : e.target.value);
   };
@@ -24,10 +33,12 @@ export function TodoMenu() {
         <button
           className="btn btn-outline btn-error"
           onClick={() => {
-            setModalTodoId(undefined);
-            setIsModalOpen(true);
+            deleteTodoItems(checkedList).then(() => {
+              updateTodoList();
+              setCheckedList([]);
+            });
           }}
-          disabled
+          disabled={checkedList.length === 0}
         >
           Delete
         </button>

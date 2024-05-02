@@ -12,6 +12,8 @@ interface ContextType {
   tagList: string[];
   setSelectedTag: (tag: string | undefined) => void;
   setSearch: (tag: string | undefined) => void;
+  checkedList: string[];
+  setCheckedList: (list: string[]) => void;
   updateTodoList: (filter?: { tag?: string; search?: string }) => void;
   listState: { pending: Boolean; error?: string };
   modalTodoId?: string;
@@ -25,6 +27,8 @@ export const ContextContent = createContext<ContextType>({
   tagList: [],
   setSelectedTag: () => {},
   setSearch: () => {},
+  checkedList: [],
+  setCheckedList: () => {},
   updateTodoList: () => {},
   listState: { pending: true },
   modalTodoId: undefined,
@@ -38,6 +42,7 @@ export function TodoContext({ children }: { children: React.ReactNode }) {
   const [tagList, setTagList] = useState<string[]>([]);
   const [selectedTag, setSelectedTag] = useState<string>();
   const [search, setSearch] = useState<string>();
+  const [checkedList, setCheckedList] = useState<string[]>([]);
   const [listState, setListState] = useState<{
     pending: Boolean;
     error?: string;
@@ -78,6 +83,8 @@ export function TodoContext({ children }: { children: React.ReactNode }) {
         tagList,
         setSelectedTag,
         setSearch,
+        checkedList,
+        setCheckedList,
         updateTodoList,
         listState,
         modalTodoId,

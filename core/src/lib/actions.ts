@@ -181,12 +181,12 @@ async function deleteFile(
   }
 }
 
-export async function onDeleteTodoItem(prevState: any, data: FormData) {
+export async function deleteTodoItems(todoIds: string[]) {
   const session = await auth();
   if (!session?.user?.id) {
     return { error: 'Not authenticated' };
   }
-  const todoIds = data.get('ids') as string[] | null;
+
   if (!todoIds || todoIds?.length === 0) {
     return { error: 'Missing todo ids' };
   }
@@ -201,10 +201,10 @@ export async function onDeleteTodoItem(prevState: any, data: FormData) {
     });
 
     if (removedItem.image) {
-      await deleteFile(true, session.user.id, removedItem.image.id);
+      await deleteUserFile(true, removedItem.image.id, session.user.id);
     }
     if (removedItem.attachment) {
-      await deleteFile(false, session.user.id, removedItem.attachment.id);
+      await deleteUserFile(false, removedItem.attachment.id, session.user.id);
     }
   }
 }

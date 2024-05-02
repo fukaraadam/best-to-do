@@ -7,7 +7,12 @@ import { getFileUrl } from '@/app/api/file/helper';
 import { PhotoIcon } from '@heroicons/react/16/solid';
 
 export function TodoList() {
-  const { listState, todoList } = useContext(ContextContent);
+  const { listState, todoList, checkedList, setCheckedList } =
+    useContext(ContextContent);
+  const allChecked = checkedList.length === todoList.length;
+  const onCheckAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckedList(e.target.checked ? todoList.map((item) => item.id) : []);
+  };
 
   return (
     <div className="mt-2 w-full overflow-x-auto">
@@ -17,7 +22,12 @@ export function TodoList() {
           <tr>
             <th>
               <label>
-                <input type="checkbox" className="checkbox" />
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={allChecked}
+                  onChange={onCheckAll}
+                />
               </label>
             </th>
             <th>Title</th>
@@ -57,12 +67,26 @@ export function TodoList() {
 }
 
 function ListItem({ item }: { item: ListItemType }) {
-  const { setModalTodoId, setIsModalOpen } = useContext(ContextContent);
+  const { setModalTodoId, setIsModalOpen, checkedList, setCheckedList } =
+    useContext(ContextContent);
+  const isChecked = checkedList.includes(item.id);
+  const onCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckedList(
+      e.target.checked
+        ? [...checkedList, item.id]
+        : checkedList.filter((id) => id !== item.id),
+    );
+  };
   return (
     <tr>
       <th>
         <label>
-          <input type="checkbox" className="checkbox" />
+          <input
+            type="checkbox"
+            className="checkbox"
+            checked={isChecked}
+            onChange={onCheck}
+          />
         </label>
       </th>
       <td>

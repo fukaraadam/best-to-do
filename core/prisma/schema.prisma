@@ -105,7 +105,7 @@ model FileImage {
   name         String
   lastModified DateTime
 
-  todo   Todo   @relation(fields: [todoId], references: [id])
+  todo   Todo   @relation(fields: [todoId], references: [id], onDelete: Cascade)
   todoId String @unique
 }
 
@@ -116,6 +116,6 @@ model FileAttachment {
   name         String
   lastModified DateTime
 
-  todo   Todo   @relation(fields: [todoId], references: [id])
+  todo   Todo   @relation(fields: [todoId], references: [id], onDelete: Cascade)
   todoId String @unique
 }
